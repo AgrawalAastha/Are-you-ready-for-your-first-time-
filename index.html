@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Ten questions. Be honest. Nobody's watching.">
+<meta property="og:title" content="Are you ready for your first time?">
+<meta property="og:description" content="Ten questions. Be honest. Nobody's watching.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="__SITE__/og/main.png">
+<meta property="og:url" content="__SITE__/">
+<title>Are You Ready?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: one centred card at a time, like a whisper in a dark room; the poster's ring-and-dot motif carries the progress. */
+:root {
+  --onyx: #061713;
+  --emerald: #125B48;
+  --emerald-deep: #0C3B2F;
+  --lime: #9EEA56;
+  --gold: #FDF499;
+  --white: #FFFFFF;
+  --muted: rgba(253, 244, 153, 0.62);
+  --line: rgba(158, 234, 86, 0.22);
+  --font-display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--onyx);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+.wrap {
+  max-width: 560px;
+  min-height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-block: 28px 32px;
+  box-sizing: border-box;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--lime);
+  font-variant-numeric: tabular-nums;
+}
+.track { display: flex; gap: 6px; }
+.track span {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid var(--line);
+  box-sizing: border-box;
+  transition: background .3s, border-color .3s;
+}
+.track span.done { background: var(--lime); border-color: var(--lime); }
+.track span.now { border-color: var(--gold); }
+
+.screen { display: flex; flex-direction: column; gap: 24px; flex: 1; }
+.eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lime); margin: 0; }
+h1 {
+  margin: 0;
+  font-size: clamp(44px, 11vw, 68px);
+  line-height: 0.96;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+h2 {
+  margin: 0;
+  font-size: clamp(30px, 7.4vw, 42px);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.lede { margin: 0; font-size: 19px; line-height: 1.45; color: var(--white); max-width: 34ch; }
+.small { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+
+.motif { position: relative; height: 170px; }
+.motif .ring {
+  position: absolute; left: 120px; top: 6px; width: 156px; height: 156px;
+  border-radius: 50%; border: 12px solid var(--gold); box-sizing: border-box;
+}
+.motif .dot {
+  position: absolute; left: 50px; top: 62px; width: 40px; height: 40px;
+  border-radius: 50%; background: var(--lime);
+  animation: nudge 2.6s ease-in-out infinite;
+}
+@keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(14px); } }
+
+.options { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; border: 0; }
+.opt {
+  display: flex; align-items: center; gap: 16px;
+  width: 100%;
+  min-height: 60px;
+  padding: 14px 18px;
+  box-sizing: border-box;
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  color: var(--gold);
+  font: 600 17px/1.3 var(--font-display);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, color .2s;
+}
+.opt .bullet {
+  flex: none; width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--lime); box-sizing: border-box;
+  transition: background .2s;
+}
+.opt:hover { border-color: var(--lime); }
+.opt:hover .bullet { background: var(--lime); }
+.opt:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.opt.picked { background: var(--lime); border-color: var(--lime); color: var(--onyx); }
+.opt.picked .bullet { background: var(--onyx); border-color: var(--onyx); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--lime);
+  color: var(--onyx);
+  font: 800 17px/1 var(--font-display);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.btn:hover { background: var(--gold); }
+.btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.btn.ghost { background: transparent; color: var(--gold); border: 2px solid var(--line); }
+.btn.ghost:hover { border-color: var(--gold); background: transparent; }
+.btn.alt { background: var(--gold); }
+.btn.alt:hover { background: var(--lime); }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+.row .btn { flex: 1 1 180px; }
+
+.result-img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  border-radius: 20px;
+  display: block;
+  background: var(--emerald-deep);
+}
+.step { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; border-top: 2px solid var(--line); }
+.step-head { display: flex; align-items: baseline; gap: 12px; }
+.step-num { font-size: 13px; font-weight: 800; color: var(--onyx); background: var(--lime); border-radius: 999px; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.step-title { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: var(--gold); margin: 0; }
+label.field-label { font-size: 13px; color: var(--muted); }
+textarea.post {
+  width: 100%;
+  min-height: 190px;
+  background: var(--emerald-deep);
+  color: var(--white);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font: 16px/1.5 var(--font-display);
+  box-sizing: border-box;
+  resize: vertical;
+}
+textarea.post:focus { outline: none; border-color: var(--lime); }
+.toast { font-size: 14px; color: var(--lime); min-height: 1.4em; margin: 0; }
+
+.foot {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 2px solid var(--line);
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  font-size: 13px; letter-spacing: 0.12em; color: var(--muted);
+}
+.fade { animation: rise .35s ease both; }
+@keyframes rise { from { opacity: .4; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .fade, .motif .dot { animation: none; }
+}
+.share-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.btn.plat { background: var(--emerald-deep); color: var(--gold); border: 2px solid var(--line); justify-content: flex-start; padding: 0 18px; }
+.btn.plat:hover { background: var(--emerald-deep); border-color: var(--lime); }
+.step .small { margin-top: -4px; }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="top">
+    <span>04.11</span>
+    <div class="track" id="track" aria-hidden="true"></div>
+  </div>
+
+  <main class="screen fade" id="screen" aria-live="polite">
+    <div class="motif" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+    <p class="eyebrow">A very personal quiz</p>
+    <h1>Are you ready for your first time?</h1>
+    <p class="lede">Ten questions. Be honest. Nobody's watching.</p>
+    <button class="btn" id="start" type="button" style="align-self:flex-start">Let's do it</button>
+  </main>
+
+  <div class="foot">
+    <span>Something's coming.</span>
+    <span>04.11</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var TYPES = {
+    natural: {
+      name: 'The Natural',
+      line: 'Calm, confident, and honestly a little smug about it.',
+      body: 'You don’t overthink it. You just start, keep it steady, and come back for more. Everyone else wants to know your secret.',
+      tip: 'Your move: keep doing exactly what you’re doing.',
+      post: 'Took a quiz at work today called “Are you ready for your first time?”\n\nTurns out I’m The Natural. Calm, confident, and a little smug about it.\n\nNo further questions.\n\nTook it yet? Tell me what you got. Something’s coming on 04.11.',
+      tweet: 'Took the “Are you ready for your first time?” quiz. I’m The Natural. Calm, confident, a little smug about it. Something’s coming on 04.11.',
+      dot: 'inside'
+    },
+    nervous: {
+      name: 'The Nervous One',
+      line: 'Curious. Sweaty palms. Secretly ready.',
+      body: 'You want to, you just don’t want to get it wrong. Good news: nobody’s first time is perfect, and it gets easier fast.',
+      tip: 'Your move: start small. Nobody’s grading you.',
+      post: 'Took a quiz at work today called “Are you ready for your first time?”\n\nTurns out I’m The Nervous One. Curious. Sweaty palms. Secretly ready.\n\nHonestly? Fair.\n\nTook it yet? Tell me what you got. Something’s coming on 04.11.',
+      tweet: 'Took the “Are you ready for your first time?” quiz. I’m The Nervous One. Curious. Sweaty palms. Secretly ready. Something’s coming on 04.11.',
+      dot: 'edge'
+    },
+    overthinker: {
+      name: 'The Overthinker',
+      line: 'Has read everything. Has done nothing.',
+      body: 'You’ve researched it, compared it, made a spreadsheet about it. You’ve been about to start since 2021.',
+      tip: 'Your move: close the tabs. Just begin.',
+      post: 'Took a quiz at work today called “Are you ready for your first time?”\n\nTurns out I’m The Overthinker. Has read everything. Has done nothing.\n\nI’d argue with the result, but I’m still researching.\n\nTook it yet? Tell me what you got. Something’s coming on 04.11.',
+      tweet: 'Took the “Are you ready for your first time?” quiz. I’m The Overthinker. Has read everything. Has done nothing. Something’s coming on 04.11.',
+      dot: 'far'
+    },
+    talker: {
+      name: 'The Big Talker',
+      line: 'Talks about it at every party. Has never actually done it.',
+      body: 'Your confidence is unmatched. Your experience is, let’s say, theoretical. We won’t tell anyone.',
+      tip: 'Your move: make it true before someone asks for details.',
+      post: 'Took a quiz at work today called “Are you ready for your first time?”\n\nTurns out I’m The Big Talker. Talks about it at every party. Has never actually done it.\n\nI would like to speak to the manager.\n\nTook it yet? Tell me what you got. Something’s coming on 04.11.',
+      tweet: 'Took the “Are you ready for your first time?” quiz. I’m The Big Talker. Talks about it at every party. Has never actually done it. Something’s coming on 04.11.',
+      dot: 'near'
+    }
+  };
+  var ORDER = ['natural', 'nervous', 'overthinker', 'talker'];
+
+  var QUESTIONS = [
+    { q: 'Be honest. Have you done it yet?', a: [
+      ['Yes, and I do it regularly.', 'natural'],
+      ['Once. I had no idea what I was doing.', 'nervous'],
+      ['Not yet. Waiting for the right moment.', 'overthinker'],
+      ['Obviously. (Have not.)', 'talker'] ] },
+    { q: 'Where did you learn about it?', a: [
+      ['Just figured it out by doing it.', 'natural'],
+      ['A friend explained it. Badly.', 'nervous'],
+      ['Forty-seven YouTube videos and a podcast.', 'overthinker'],
+      ['Mostly from what people say at parties.', 'talker'] ] },
+    { q: 'How much is enough for a first time?', a: [
+      ['Whatever feels comfortable.', 'natural'],
+      ['As little as possible. Just to try.', 'nervous'],
+      ['Still calculating.', 'overthinker'],
+      ['Go big or go home.', 'talker'] ] },
+    { q: 'How long should it last?', a: [
+      ['Years, ideally.', 'natural'],
+      ['Long enough to not be embarrassing.', 'nervous'],
+      ['Depends on the conditions.', 'overthinker'],
+      ['Not long. But I’ll say it did.', 'talker'] ] },
+    { q: 'How often, ideally?', a: [
+      ['A little, every day.', 'natural'],
+      ['Once a month, when I remember.', 'nervous'],
+      ['Only when everything is perfect.', 'overthinker'],
+      ['Whenever someone’s watching.', 'talker'] ] },
+    { q: 'What scares you most about it?', a: [
+      ['That I didn’t start sooner.', 'natural'],
+      ['Doing it wrong.', 'nervous'],
+      ['Picking the wrong one.', 'overthinker'],
+      ['People finding out it’s my first time.', 'talker'] ] },
+    { q: 'Someone asks, “Have you done this before?”', a: [
+      ['“Yes.” And it’s true.', 'natural'],
+      ['“Kind of…”', 'nervous'],
+      ['“I’ve read a lot about it.”', 'overthinker'],
+      ['“Bro. Obviously.”', 'talker'] ] },
+    { q: 'Halfway through, things get bumpy. You:', a: [
+      ['Stay calm and keep going.', 'natural'],
+      ['Panic a little. Keep going anyway.', 'nervous'],
+      ['Pull out immediately.', 'overthinker'],
+      ['Tell everyone it went great.', 'talker'] ] },
+    { q: 'Afterwards, who do you tell?', a: [
+      ['Nobody. It’s personal.', 'natural'],
+      ['My one close friend.', 'nervous'],
+      ['I made a spreadsheet.', 'overthinker'],
+      ['LinkedIn.', 'talker'] ] },
+    { q: 'Describe your first time in one word.', a: [
+      ['Easy.', 'natural'],
+      ['Awkward.', 'nervous'],
+      ['Pending.', 'overthinker'],
+      ['Legendary.', 'talker'] ] }
+  ];
+
+  var screen = document.getElementById('screen');
+  var track = document.getElementById('track');
+  var answers = [];
+
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'text') n.textContent = attrs[k];
+      else if (k === 'cls') n.className = attrs[k];
+      else n.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { n.appendChild(c); });
+    return n;
+  }
+
+  function drawTrack(i) {
+    track.innerHTML = '';
+    QUESTIONS.forEach(function (_, j) {
+      var s = document.createElement('span');
+      if (j < i) s.className = 'done';
+      else if (j === i) s.className = 'now';
+      track.appendChild(s);
+    });
+  }
+
+  function swap(nodes) {
+    screen.classList.remove('fade');
+    void screen.offsetWidth;
+    screen.innerHTML = '';
+    nodes.forEach(function (n) { screen.appendChild(n); });
+    screen.classList.add('fade');
+    window.scrollTo(0, 0);
+  }
+
+  function showQuestion(i) {
+    drawTrack(i);
+    var item = QUESTIONS[i];
+    var list = el('div', { cls: 'options', role: 'group', 'aria-label': 'Answers' });
+    item.a.forEach(function (pair, k) {
+      var b = el('button', { cls: 'opt', type: 'button', id: 'q' + i + 'o' + k });
+      b.appendChild(el('span', { cls: 'bullet', 'aria-hidden': 'true' }));
+      b.appendChild(el('span', { text: pair[0] }));
+      b.addEventListener('click', function () {
+        b.classList.add('picked');
+        answers[i] = pair[1];
+        Array.prototype.forEach.call(list.children, function (o) { o.disabled = true; });
+        setTimeout(function () {
+          if (i + 1 < QUESTIONS.length) showQuestion(i + 1);
+          else showResult();
+        }, 320);
+      });
+      list.appendChild(b);
+    });
+    var nodes = [
+      el('p', { cls: 'eyebrow', text: 'Question ' + (i + 1) + ' of ' + QUESTIONS.length }),
+      el('h2', { text: item.q }),
+      list
+    ];
+    if (i > 0) {
+      var back = el('button', { cls: 'btn ghost', type: 'button', text: 'Back', style: 'align-self:flex-start' });
+      back.addEventListener('click', function () { showQuestion(i - 1); });
+      nodes.push(back);
+    }
+    swap(nodes);
+    var first = list.querySelector('button');
+    if (first) first.focus({ preventScroll: true });
+  }
+
+  /* ---------- Result card image ---------- */
+  function wrapLines(ctx, text, maxW) {
+    var words = text.split(' '), lines = [], cur = '';
+    words.forEach(function (w) {
+      var test = cur ? cur + ' ' + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; }
+      else cur = test;
+    });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  function drawCard(t) {
+    var W = 1080, H = 1350;
+    var c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    var ctx = c.getContext('2d');
+    var F = '"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif';
+
+    ctx.fillStyle = '#061713';
+    ctx.fillRect(0, 0, W, H);
+
+    // inner frame
+    ctx.strokeStyle = 'rgba(253, 244, 153, 0.35)';
+    ctx.lineWidth = 4;
+    var r = 40, x0 = 48, y0 = 48, w0 = W - 96, h0 = H - 96;
+    ctx.beginPath();
+    ctx.moveTo(x0 + r, y0); ctx.arcTo(x0 + w0, y0, x0 + w0, y0 + h0, r);
+    ctx.arcTo(x0 + w0, y0 + h0, x0, y0 + h0, r); ctx.arcTo(x0, y0 + h0, x0, y0, r);
+    ctx.arcTo(x0, y0, x0 + w0, y0, r); ctx.closePath(); ctx.stroke();
+
+    var pad = 120;
+    ctx.fillStyle = '#9EEA56';
+    ctx.font = '600 30px ' + F;
+    ctx.textBaseline = 'alphabetic';
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '7px';
+    ctx.textAlign = 'left';
+    ctx.fillText('04.11', pad, 160);
+    ctx.textAlign = 'right';
+    ctx.fillText('ARE YOU READY?', W - pad, 160);
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    ctx.textAlign = 'left';
+
+    // ring and dot: the dot's position is the result
+    var cx = 640, cy = 440, rr = 170;
+    ctx.strokeStyle = '#FDF499';
+    ctx.lineWidth = 30;
+    ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2); ctx.stroke();
+    var dotX = { inside: cx, edge: cx - rr, near: cx - rr - 90, far: pad + 50 }[t.dot];
+    ctx.fillStyle = '#9EEA56';
+    ctx.beginPath(); ctx.arc(dotX, cy, t.dot === 'near' ? 62 : 46, 0, Math.PI * 2); ctx.fill();
+
+    // text block
+    var y = 780;
+    ctx.fillStyle = '#9EEA56';
+    ctx.font = '600 44px ' + F;
+    ctx.fillText('I’m', pad, y);
+    y += 112;
+    ctx.fillStyle = '#FDF499';
+    ctx.font = '800 118px ' + F;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '-3px';
+    var nameLines = wrapLines(ctx, t.name, W - pad * 2);
+    nameLines.forEach(function (ln, i) { ctx.fillText(ln, pad, y + i * 108); });
+    y += (nameLines.length - 1) * 108;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    y += 76;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '400 40px ' + F;
+    wrapLines(ctx, t.line, W - pad * 2).forEach(function (ln, i) {
+      ctx.fillText(ln, pad, y + i * 52);
+    });
+
+    ctx.fillStyle = 'rgba(253, 244, 153, 0.75)';
+    ctx.font = '600 30px ' + F;
+    ctx.fillText('Are you ready for your first time?', pad, H - 140);
+    return c;
+  }
+
+  
+
+  var IS_TOUCH = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+  var ICONS = {
+    linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3zM9.5 9.75h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1v5.35h-4v-4.74c0-1.13-.02-2.59-1.58-2.59-1.58 0-1.82 1.23-1.82 2.5v4.83h-4z"/></svg>',
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+    slack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78zm-1.08 16.2h1.7L7.4 4.73H5.58z"/></svg>',
+    whatsapp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg>',
+    share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 14v6h14v-6"/></svg>'
+  };
+
+  function iconButton(cls, icon, label, href) {
+    var b = href ? el('a', { cls: cls, href: href, target: '_blank', rel: 'noopener' }) : el('button', { cls: cls, type: 'button' });
+    b.innerHTML = ICONS[icon] + '<span></span>';
+    b.querySelector('span').textContent = label;
+    return b;
+  }
+
+  function showResult() {
+    drawTrack(QUESTIONS.length);
+    var tally = { natural: 0, nervous: 0, overthinker: 0, talker: 0 };
+    answers.forEach(function (t) { if (t) tally[t] += 1; });
+    var top = ORDER.reduce(function (best, k) { return tally[k] > tally[best] ? k : best; }, ORDER[0]);
+    var t = TYPES[top];
+    var RESULT_URL = location.origin + '/r/' + top;
+
+    var img = el('img', { cls: 'result-img', alt: 'Your result card: ' + t.name + '. ' + t.line });
+    var cardBlob = null;
+    var render = function () {
+      var c = drawCard(t);
+      try { img.src = c.toDataURL('image/png'); } catch (e) {}
+      c.toBlob(function (b) { if (b) cardBlob = b; }, 'image/png');
+    };
+    var fontsReady = (document.fonts && document.fonts.load)
+      ? Promise.all([
+          document.fonts.load('800 118px "Bricolage Grotesque"'),
+          document.fonts.load('400 40px "Bricolage Grotesque"'),
+          document.fonts.load('600 30px "Bricolage Grotesque"')
+        ]).catch(function () {})
+      : Promise.resolve();
+    render();
+    fontsReady.then(render);
+
+    var postText = t.post + '\n\nTake it here: ' + RESULT_URL;
+    var friendText = 'I just found out I’m ' + t.name + '. Are you ready for your first time? Find out which one you are: ' + RESULT_URL;
+    var toast = el('p', { cls: 'toast', role: 'status' });
+    var say = function (m) { toast.textContent = m; };
+
+    function cardFile() {
+      if (!cardBlob) return null;
+      try { return new File([cardBlob], 'my-first-time-' + top + '.png', { type: 'image/png' }); } catch (e) { return null; }
+    }
+    function canShareCard() {
+      var f = cardFile();
+      try { return !!(IS_TOUCH && f && navigator.canShare && navigator.canShare({ files: [f] })); } catch (e) { return false; }
+    }
+    function shareCard(text) {
+      return navigator.share({ files: [cardFile()], text: text }).then(function () { return true; }, function (e) { return !!(e && e.name === 'AbortError'); });
+    }
+    function copyImage() {
+      if (!cardBlob || !window.ClipboardItem || !navigator.clipboard || !navigator.clipboard.write) return Promise.reject();
+      return navigator.clipboard.write([new ClipboardItem({ 'image/png': cardBlob })]);
+    }
+    function copyText(s) {
+      if (!navigator.clipboard || !navigator.clipboard.writeText) return Promise.reject();
+      return navigator.clipboard.writeText(s);
+    }
+    function downloadCard() {
+      if (!cardBlob) return;
+      var url = URL.createObjectURL(cardBlob);
+      var a = document.createElement('a'); a.href = url; a.download = 'my-first-time-' + top + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    }
+
+    // 1. Share your result
+    var li = iconButton('btn plat', 'linkedin', 'LinkedIn', 'https://www.linkedin.com/feed/?shareActive=true&text=' + encodeURIComponent(postText));
+    var ig = iconButton('btn plat', 'instagram', 'Instagram');
+    var sl = iconButton('btn plat', 'slack', 'Slack');
+    var tw = iconButton('btn plat', 'x', 'X / Twitter', 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(t.tweet) + '&url=' + encodeURIComponent(RESULT_URL));
+
+    function phoneShare(e, appName, text) {
+      if (!canShareCard()) return false;
+      if (e) e.preventDefault();
+      shareCard(text).then(function (ok) { say(ok ? 'Pick ' + appName + ' from the list. Your card goes as an image.' : ''); });
+      return true;
+    }
+
+    li.addEventListener('click', function (e) {
+      if (phoneShare(e, 'LinkedIn', postText)) return;
+      copyImage().then(function () {
+        say('LinkedIn is open with your post. Your card shows as the link preview. Want it as a full image? It’s copied, so just paste it in.');
+      }, function () { say('LinkedIn is open with your post. Your card shows as the link preview.'); });
+    });
+    tw.addEventListener('click', function (e) {
+      if (phoneShare(e, 'X', t.tweet + ' ' + RESULT_URL)) return;
+      copyImage().then(function () {
+        say('X is open with your post and your card as the preview. It’s also copied if you’d rather paste it in.');
+      }, function () { say('X is open with your post and your card as the preview.'); });
+    });
+    sl.addEventListener('click', function (e) {
+      if (phoneShare(e, 'Slack', postText)) return;
+      copyImage().then(function () {
+        say('Card copied. Paste it into any Slack channel or DM.');
+      }, function () {
+        copyText(postText).then(function () { say('Post copied. Paste it into Slack and your card shows up with the link.'); },
+          function () { say('Copy this link into Slack and your card shows up: ' + RESULT_URL); });
+      });
+    });
+    ig.addEventListener('click', function (e) {
+      if (phoneShare(e, 'Instagram', postText)) return;
+      downloadCard();
+      say('Card saved. Instagram only posts from your phone, so share it from there, or open this quiz on your phone.');
+    });
+
+    // 2. Share with a friend
+    var wa = iconButton('btn plat', 'whatsapp', 'WhatsApp', 'https://wa.me/?text=' + encodeURIComponent(friendText));
+    var cp = iconButton('btn plat', 'link', 'Copy link');
+    cp.addEventListener('click', function () {
+      copyText(friendText).then(function () { say('Link copied. Send it to someone who needs to take this.'); },
+        function () { say('Copy this link: ' + RESULT_URL); });
+    });
+    var friendRow = [wa, cp];
+    if (navigator.share) {
+      var more = iconButton('btn plat', 'share', 'More');
+      more.addEventListener('click', function () {
+        navigator.share({ title: 'Are you ready for your first time?', text: 'I just found out I’m ' + t.name + '. Which one are you?', url: RESULT_URL }).catch(function () {});
+      });
+      friendRow.push(more);
+    }
+
+    var again = el('button', { cls: 'btn ghost', type: 'button', text: 'Take it again', style: 'align-self:flex-start' });
+    again.addEventListener('click', function () { answers = []; showQuestion(0); });
+
+    function section(title, sub, kids) {
+      return el('section', { cls: 'step' }, [el('h3', { cls: 'step-title', text: title }), el('p', { cls: 'small', text: sub }), el('div', { cls: 'share-grid' }, kids)]);
+    }
+
+    swap([
+      el('p', { cls: 'eyebrow', text: 'Your result' }),
+      img,
+      el('p', { cls: 'lede', text: t.body }),
+      section('Share your result', IS_TOUCH ? 'Your card goes as an image, with a caption ready.' : 'Your post comes pre-written, with your card attached as the preview.', [li, ig, sl, tw]),
+      section('Share with a friend', 'Send them the quiz. They’ll see which one you got.', friendRow),
+      toast,
+      again
+    ]);
+  }
+
+  drawTrack(-1);
+  document.getElementById('start').addEventListener('click', function () { showQuestion(0); });
+})();
+</script>
+
+</body>
+</html>
