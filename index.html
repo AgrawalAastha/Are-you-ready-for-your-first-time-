@@ -194,6 +194,11 @@ textarea.post:focus { outline: none; border-color: var(--lime); }
 .btn.plat { background: var(--emerald-deep); color: var(--gold); border: 2px solid var(--line); justify-content: flex-start; padding: 0 18px; }
 .btn.plat:hover { background: var(--emerald-deep); border-color: var(--lime); }
 .step .small { margin-top: -4px; }
+.next { display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 16px; background: var(--emerald); }
+.next p { margin: 0; font-size: 16px; line-height: 1.45; color: var(--white); }
+.next .btn { align-self: flex-start; }
+.linkish { align-self: flex-start; background: none; border: 0; padding: 4px 0; font: 600 14px/1.4 var(--font-display); color: var(--lime); text-decoration: underline; cursor: pointer; }
+.linkish:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 </style>
 </head>
 <body>
@@ -539,44 +544,52 @@ textarea.post:focus { outline: none; border-color: var(--lime); }
     }
 
     // 1. Share your result
-    var li = iconButton('btn plat', 'linkedin', 'LinkedIn', 'https://www.linkedin.com/feed/?shareActive=true&text=' + encodeURIComponent(postText));
-    var ig = iconButton('btn plat', 'instagram', 'Instagram');
-    var sl = iconButton('btn plat', 'slack', 'Slack');
-    var tw = iconButton('btn plat', 'x', 'X / Twitter', 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(t.tweet) + '&url=' + encodeURIComponent(RESULT_URL));
-
-    function phoneShare(e, appName, text) {
-      if (!canShareCard()) return false;
-      if (e) e.preventDefault();
-      shareCard(text).then(function (ok) { say(ok ? 'Pick ' + appName + ' from the list. Your card goes as an image.' : ''); });
-      return true;
+    var APPS = {
+      linkedin: { name: 'LinkedIn', icon: 'linkedin', open: 'https://www.linkedin.com/feed/?shareActive=true&text=' + encodeURIComponent(postText), text: postText },
+      instagram: { name: 'Instagram', icon: 'instagram', open: null, text: postText },
+      slack: { name: 'Slack', icon: 'slack', open: 'https://app.slack.com/client', text: postText },
+      x: { name: 'X', icon: 'x', open: 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(t.tweet) + '&url=' + encodeURIComponent(RESULT_URL), text: t.tweet + ' ' + RESULT_URL }
+    };
+    var next = el('div', { cls: 'next', hidden: 'hidden', role: 'status' });
+    function showNext(app, message) {
+      next.innerHTML = '';
+      next.appendChild(el('p', { text: message }));
+      if (app.open) next.appendChild(iconButton('btn', app.icon, 'Open ' + app.name, app.open));
+      var dl = el('button', { cls: 'linkish', type: 'button', text: 'Or download the card instead' });
+      dl.addEventListener('click', function () { downloadCard(); say('Card downloaded. Attach it to your post.'); });
+      next.appendChild(dl);
+      next.hidden = false;
+      say('');
     }
-
-    li.addEventListener('click', function (e) {
-      if (phoneShare(e, 'LinkedIn', postText)) return;
-      copyImage().then(function () {
-        say('LinkedIn is open with your post. Your card shows as the link preview. Want it as a full image? It’s copied, so just paste it in.');
-      }, function () { say('LinkedIn is open with your post. Your card shows as the link preview.'); });
-    });
-    tw.addEventListener('click', function (e) {
-      if (phoneShare(e, 'X', t.tweet + ' ' + RESULT_URL)) return;
-      copyImage().then(function () {
-        say('X is open with your post and your card as the preview. It’s also copied if you’d rather paste it in.');
-      }, function () { say('X is open with your post and your card as the preview.'); });
-    });
-    sl.addEventListener('click', function (e) {
-      if (phoneShare(e, 'Slack', postText)) return;
-      copyImage().then(function () {
-        say('Card copied. Paste it into any Slack channel or DM.');
-      }, function () {
-        copyText(postText).then(function () { say('Post copied. Paste it into Slack and your card shows up with the link.'); },
-          function () { say('Copy this link into Slack and your card shows up: ' + RESULT_URL); });
-      });
-    });
-    ig.addEventListener('click', function (e) {
-      if (phoneShare(e, 'Instagram', postText)) return;
+    function saveThenOpen(app) {
       downloadCard();
-      say('Card saved. Instagram only posts from your phone, so share it from there, or open this quiz on your phone.');
+      showNext(app, 'Your card is saved to your downloads. Open ' + app.name + ' and add it to your post as an image.');
+    }
+    function shareTo(key) {
+      var app = APPS[key];
+      if (canShareCard()) {
+        shareCard(app.text).then(function (ok) {
+          if (ok) say('Pick ' + app.name + ' from the list. Your card goes as an image.');
+          else saveThenOpen(app);
+        });
+        return;
+      }
+      if (key === 'instagram') {
+        downloadCard();
+        showNext(app, 'Card saved. Instagram only posts from a phone, so post it from your phone’s photos.');
+        return;
+      }
+      if (IS_TOUCH) { saveThenOpen(app); return; }
+      copyImage().then(function () {
+        showNext(app, 'Your card is copied. Open ' + app.name + ', then paste it into your post (Ctrl+V, or Cmd+V on a Mac).' + (key === 'slack' ? '' : ' Your caption is already written.'));
+      }, function () { saveThenOpen(app); });
+    }
+    var platButtons = ['linkedin', 'instagram', 'slack', 'x'].map(function (k) {
+      var b = iconButton('btn plat', APPS[k].icon, k === 'x' ? 'X / Twitter' : APPS[k].name);
+      b.addEventListener('click', function () { shareTo(k); });
+      return b;
     });
+    var li = platButtons[0], ig = platButtons[1], sl = platButtons[2], tw = platButtons[3];
 
     // 2. Share with a friend
     var wa = iconButton('btn plat', 'whatsapp', 'WhatsApp', 'https://wa.me/?text=' + encodeURIComponent(friendText));
@@ -605,7 +618,8 @@ textarea.post:focus { outline: none; border-color: var(--lime); }
       el('p', { cls: 'eyebrow', text: 'Your result' }),
       img,
       el('p', { cls: 'lede', text: t.body }),
-      section('Share your result', IS_TOUCH ? 'Your card goes as an image, with a caption ready.' : 'Your post comes pre-written, with your card attached as the preview.', [li, ig, sl, tw]),
+      section('Share your result', 'Your card goes as an image, with a caption ready.', [li, ig, sl, tw]),
+      next,
       section('Share with a friend', 'Send them the quiz. They’ll see which one you got.', friendRow),
       toast,
       again
